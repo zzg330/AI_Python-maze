@@ -45,6 +45,22 @@ class QueueFrontier(StackFrontier):
             return node
 
 
+# Greedy Best-First Search
+class GreedySearchFrontier(StackFrontier):
+    def remove(self):
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            node = self.frontier[0]
+            index = 0
+            for checked_index, checked_node in enumerate(self.frontier):
+                if node.distance > checked_node.distance:
+                    node = checked_node
+                    index = checked_index
+            del(self.frontier[index])
+            return node
+
+
 # A* Search Algorithm
 class AStartSearchFrontier(StackFrontier):
 
@@ -58,7 +74,7 @@ class AStartSearchFrontier(StackFrontier):
                 if node.step + node.distance > checked_node.step + checked_node.distance:
                     node = checked_node
                     index = checked_index
-            del (self.frontier[index])
+            del(self.frontier[index])
             return node
 
 
@@ -146,8 +162,9 @@ class Maze:
         start = Node(state=self.start, parent=None, action=None, step=0,
                      distance=abs(self.goal[0] - self.start[0]) + abs((self.goal[1] - self.start[1])))
         # frontier = StackFrontier()
-        # frontier = QueueFrontier()
-        frontier = AStartSearchFrontier()
+        frontier = QueueFrontier()
+        # frontier = GreedySearchFrontier()
+        # frontier = AStartSearchFrontier()
         frontier.add(start)
 
         # Initialize an empty explored set
