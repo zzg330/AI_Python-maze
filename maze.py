@@ -10,6 +10,7 @@ class Node:
         self.distance = distance
 
 
+# Depth-First Search Algorithm
 class StackFrontier:
     def __init__(self):
         self.frontier = []
@@ -32,6 +33,7 @@ class StackFrontier:
             return node
 
 
+# Breadth-First Search Algorithm
 class QueueFrontier(StackFrontier):
 
     def remove(self):
@@ -43,23 +45,20 @@ class QueueFrontier(StackFrontier):
             return node
 
 
-class GreetFrontier(StackFrontier):
+# A* Search Algorithm
+class AStartSearchFrontier(StackFrontier):
 
     def remove(self):
         if self.empty():
             raise Exception("empty frontier")
         else:
             node = self.frontier[0]
-            if len(self.frontier) > 1:
-                index = 0
-                for checked_index, checked_node in enumerate(self.frontier):
-                    if node.step+node.distance > checked_node.step+checked_node.distance:
-                        # print("checked_index", checked_index)
-                        node = checked_node
-                        index = checked_index
-                del(self.frontier[index])
-            else:
-                self.frontier = self.frontier[1:]
+            index = 0
+            for checked_index, checked_node in enumerate(self.frontier):
+                if node.step + node.distance > checked_node.step + checked_node.distance:
+                    node = checked_node
+                    index = checked_index
+            del (self.frontier[index])
             return node
 
 
@@ -145,10 +144,10 @@ class Maze:
 
         # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None, step=0,
-                     distance=abs(self.goal[0]-self.start[0])+abs((self.goal[1]-self.start[1])))
+                     distance=abs(self.goal[0] - self.start[0]) + abs((self.goal[1] - self.start[1])))
         # frontier = StackFrontier()
         # frontier = QueueFrontier()
-        frontier = GreetFrontier()
+        frontier = AStartSearchFrontier()
         frontier.add(start)
 
         # Initialize an empty explored set
@@ -184,8 +183,8 @@ class Maze:
             # Add neighbors to frontier
             for action, state in self.neighbors(node.state):
                 if not frontier.contains_state(state) and state not in self.explored:
-                    child = Node(state=state, parent=node, action=action, step=node.step+1,
-                                 distance=abs(self.goal[0]-state[0])+abs(self.goal[1]-state[1]))
+                    child = Node(state=state, parent=node, action=action, step=node.step + 1,
+                                 distance=abs(self.goal[0] - state[0]) + abs(self.goal[1] - state[1]))
                     frontier.add(child)
 
     def output_image(self, filename, show_solution=True, show_explored=False):
