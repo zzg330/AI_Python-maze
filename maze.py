@@ -140,10 +140,10 @@ class Maze:
     def neighbors(self, state):
         row, col = state
         candidates = [
-            ("up", (row - 1, col)),
-            ("down", (row + 1, col)),
-            ("left", (row, col - 1)),
-            ("right", (row, col + 1))
+           ("up", (row - 1, col)),
+           ("down", (row + 1, col)),
+           ("left", (row, col - 1)),
+           ("right", (row, col + 1))
         ]
 
         result = []
@@ -162,9 +162,9 @@ class Maze:
         start = Node(state=self.start, parent=None, action=None, step=0,
                      distance=abs(self.goal[0] - self.start[0]) + abs((self.goal[1] - self.start[1])))
         # frontier = StackFrontier()
-        frontier = QueueFrontier()
+        # frontier = QueueFrontier()
         # frontier = GreedySearchFrontier()
-        # frontier = AStartSearchFrontier()
+        frontier = AStartSearchFrontier()
         frontier.add(start)
 
         # Initialize an empty explored set
