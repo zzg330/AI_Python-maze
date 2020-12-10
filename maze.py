@@ -2,10 +2,9 @@ import sys
 
 
 class Node:
-    def __init__(self, state, parent, action, step, distance):
+    def __init__(self, state, parent, step, distance):
         self.state = state
         self.parent = parent
-        self.action = action
         self.step = step
         self.distance = distance
 
@@ -120,7 +119,7 @@ class Maze:
         self.solution = None
 
     def print(self):
-        solution = self.solution[1] if self.solution is not None else None
+        solution = self.solution if self.solution is not None else None
         print()
         for i, row in enumerate(self.walls):
             for j, col in enumerate(row):
@@ -139,17 +138,24 @@ class Maze:
 
     def neighbors(self, state):
         row, col = state
+        """
         candidates = [
            ("up", (row - 1, col)),
            ("down", (row + 1, col)),
            ("left", (row, col - 1)),
            ("right", (row, col + 1))
         ]
-
+"""
+        candidates = [
+            (row - 1, col), # Up
+            (row + 1, col), # Down
+            (row, col - 1), #Left
+            (row, col + 1) #Right
+        ]
         result = []
-        for action, (r, c) in candidates:
+        for (r, c) in candidates:
             if 0 <= r < self.height and 0 <= c < self.width and not self.walls[r][c]:
-                result.append((action, (r, c)))
+                result.append((r, c))
         return result
 
     def solve(self):
@@ -159,7 +165,7 @@ class Maze:
         self.num_explored = 0
 
         # Initialize frontier to just the starting position
-        start = Node(state=self.start, parent=None, action=None, step=0,
+        start = Node(state=self.start, parent=None, step=0,
                      distance=abs(self.goal[0] - self.start[0]) + abs((self.goal[1] - self.start[1])))
         # frontier = StackFrontier()
         # frontier = QueueFrontier()
@@ -183,24 +189,21 @@ class Maze:
 
             # If node is the goal, then we have a solution
             if node.state == self.goal:
-                actions = []
                 cells = []
                 while node.parent is not None:
-                    actions.append(node.action)
                     cells.append(node.state)
                     node = node.parent
-                actions.reverse()
                 cells.reverse()
-                self.solution = (actions, cells)
+                self.solution = cells
                 return
 
             # Mark node as explored
             self.explored.add(node.state)
 
             # Add neighbors to frontier
-            for action, state in self.neighbors(node.state):
+            for state in self.neighbors(node.state):
                 if not frontier.contains_state(state) and state not in self.explored:
-                    child = Node(state=state, parent=node, action=action, step=node.step + 1,
+                    child = Node(state=state, parent=node, step=node.step + 1,
                                  distance=abs(self.goal[0] - state[0]) + abs(self.goal[1] - state[1]))
                     frontier.add(child)
 
@@ -217,7 +220,7 @@ class Maze:
         )
         draw = ImageDraw.Draw(img)
 
-        solution = self.solution[1] if self.solution is not None else None
+        solution = self.solution if self.solution is not None else None
         for i, row in enumerate(self.walls):
             for j, col in enumerate(row):
 
